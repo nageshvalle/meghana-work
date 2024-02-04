@@ -1,6 +1,5 @@
 locals {
   rotation               = var.rotation_days == null ? false : true
-  function_name          = var.rotation_strategy == "single" ? "postgresql-single-user" : "postgresql-multiuser"
   default_lambda_handler = "lambda_function.lambda_handler"
   lambda_runtime         = "python3.7"
   name                   = "${var.name_prefix}-${var.username}-rotate-secret"
@@ -11,15 +10,6 @@ locals {
     engine              = var.engine
     host                = var.host
     port                = var.port
-    dbClusterIdentifier = var.db_cluster_identifier
-  }
-  secret_value_multiuser = {
-    username            = var.username
-    password            = var.password
-    engine              = var.engine
-    host                = var.host
-    port                = var.port
-    masterarn           = var.master_secret_arn
     dbClusterIdentifier = var.db_cluster_identifier
   }
 
@@ -37,7 +27,7 @@ resource "aws_secretsmanager_secret" "this" {
 
 resource "aws_secretsmanager_secret_version" "this" {
   secret_id      = aws_secretsmanager_secret.this.id
-  secret_string  = jsonencode(var.rotation_strategy == "single" ? local.secret_value_single_user : local.secret_value_multiuser)
+  secret_string  = jsonencode(local.secret_value_single_user)
 
   lifecycle {
     ignore_changes = [
