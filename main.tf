@@ -5,6 +5,8 @@ locals {
   function_name          = "rotate-rds-secret"
   name                   = "${var.name_prefix}-${var.username}-rotate-secret"
 
+
+  
   secret_value_single_user = {
     username            = var.username
     password            = var.password
@@ -69,7 +71,9 @@ module "lambda_security_group" {
     },
   ]
 
-  tags = merge(var.tags, {Name = local.name})
+  tags = {
+    ENV         = var.db-env
+    Name        = local.name
 }
 
 module "db_ingress" {
@@ -97,7 +101,9 @@ module "rotation_lambda" {
   handler       = coalesce(var.rotation_lambda_handler, local.default_lambda_handler)
   runtime       = local.lambda_runtime
   timeout       = 120
-  tags          = var.tags
+  tags          = {
+    ENV         = var.db-env
+}
   publish       = true
   memory_size   = 128
   layers        = var.rotation_lambda_layers
