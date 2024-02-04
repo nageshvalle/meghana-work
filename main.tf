@@ -159,7 +159,6 @@ data "aws_iam_policy_document" "secret" {
 }
 
 data "aws_iam_policy_document" "superuser" {
-  count = var.rotation_strategy == "single" ? 0 : 1
   statement {
     actions = [
       "secretsmanager:GetSecretValue",
