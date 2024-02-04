@@ -158,14 +158,3 @@ data "aws_iam_policy_document" "secret" {
     ]
   }
 }
-
-data "aws_iam_policy_document" "superuser" {
-  statement {
-    actions = [
-      "secretsmanager:GetSecretValue",
-    ]
-    resources = [
-      var.master_secret_arn,
-    ]
-  }
-}
