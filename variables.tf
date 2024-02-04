@@ -18,7 +18,6 @@ variable "password" {
 variable "rotation_days" {
   description = "The number of days between rotations. When set to `null` (the default) rotation is not configured."
   type        = number
-  default     = 7
 }
 
 variable "secret_recovery_window_days" {
