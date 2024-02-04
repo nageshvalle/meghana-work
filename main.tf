@@ -6,7 +6,7 @@ locals {
   name                   = "${var.name_prefix}-${var.username}-rotate-secret"
 
 
-  
+
   secret_value_single_user = {
     username            = var.username
     password            = var.password
@@ -57,7 +57,7 @@ resource "aws_secretsmanager_secret_rotation" "this" {
 module "lambda_security_group" {
   count   = local.rotation ? 1 : 0
   source  = "terraform-aws-modules/security-group/aws"
-  version = "4.3.0"
+  version = "5.1.0"
 
   name          = local.name
   description   = "Contains egress rules for secret rotation lambda"
@@ -72,7 +72,7 @@ module "lambda_security_group" {
   ]
 
   tags = {
-    ENV         = var.db-env
+    ENV         = var.db_env
     Name        = local.name
 }
 }
@@ -80,7 +80,7 @@ module "lambda_security_group" {
 module "db_ingress" {
   count   = local.rotation ? 1 : 0
   source  = "terraform-aws-modules/security-group/aws"
-  version = "4.3.0"
+  version = "5.1.0"
 
   create_sg         = false
   security_group_id = var.db_security_group_id
@@ -96,14 +96,14 @@ module "db_ingress" {
 module "rotation_lambda" {
   count   = local.rotation ? 1 : 0
   source  = "terraform-aws-modules/lambda/aws"
-  version = "~> 2.0"
+  version = "7.2.1"
 
   function_name = local.name
   handler       = coalesce(var.rotation_lambda_handler, local.default_lambda_handler)
   runtime       = local.lambda_runtime
   timeout       = 120
   tags          = {
-    ENV         = var.db-env
+    ENV         = var.db_env
 }
   publish       = true
   memory_size   = 128
