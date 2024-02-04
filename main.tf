@@ -75,6 +75,7 @@ module "lambda_security_group" {
     ENV         = var.db-env
     Name        = local.name
 }
+}
 
 module "db_ingress" {
   count   = local.rotation ? 1 : 0
