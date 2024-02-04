@@ -2,7 +2,7 @@ locals {
   rotation               = var.rotation_days == null ? false : true
   default_lambda_handler = "lambda_function.lambda_handler"
   lambda_runtime         = "python3.7"
-  function_name          = "rotate-rds-password"
+  function_name          = "rotate-rds-secret"
   name                   = "${var.name_prefix}-${var.username}-rotate-secret"
 
   secret_value_single_user = {
