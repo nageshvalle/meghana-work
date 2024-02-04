@@ -1,11 +1,13 @@
 variable "name_prefix" {
   description = "The prefix for names of created resources"
   type        = string
+  default     = "rds"
 }
 
 variable "username" {
   description = "The username"
   type        = string
+  default     = "postgres"
 }
 
 variable "password" {
@@ -16,7 +18,7 @@ variable "password" {
 variable "rotation_days" {
   description = "The number of days between rotations. When set to `null` (the default) rotation is not configured."
   type        = number
-  default     = null
+  default     = 7
 }
 
 variable "secret_recovery_window_days" {
@@ -28,21 +30,25 @@ variable "secret_recovery_window_days" {
 variable "engine" {
   description = "The database engine type"
   type        = string
+  default     = "PostgreSQL"
 }
 
 variable "host" {
   description = "The host name of the database instance"
   type        = string
+  default     = "database-1.ctm73h7awscg.ap-south-1.rds.amazonaws.com"
 }
 
 variable "port" {
   description = "The port number of the database instance"
   type        = number
+  default     = 5432
 }
 
 variable "db_cluster_identifier" {
   description = "The DB cluster identifier"
   type        = string
+  default     = "database-1"
 }
 
 variable "db_env" {
@@ -78,19 +84,19 @@ variable "rotation_lambda_layers" {
 variable "rotation_lambda_subnet_ids" {
   description = "The VPC subnets that the rotation lambda runs in. Required for secret rotation."
   type        = list(string)
-  default     = []
+  default     = ["subnet-0daf94b73671e479d", "subnet-029c175d2f74f6a5d", "subnet-0aaad286d3c2209ae"]
 }
 
 variable "rotation_lambda_vpc_id" {
   description = "The VPC that the secret rotation lambda runs in. Required for secret rotation."
   type        = string
-  default     = null
+  default     = "vpc-096cb3d7c483a569c"
 }
 
 variable "db_security_group_id" {
   description = "The security group ID for the database. Required for secret rotation."
   type        = string
-  default     = null
+  default     = "sg-0dc0eed0e08f74f7e"
 }
 
 variable "recreate_missing_package" {
