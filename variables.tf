@@ -45,12 +45,6 @@ variable "db_cluster_identifier" {
   type        = string
 }
 
-variable "master_secret_arn" {
-  description = "The superuser credentials used to update another secret in the multiuser rotation strategy."
-  type        = string
-  default     = null
-}
-
 variable "tags" {
   description = "Tags to use for created resources"
   type        = map(string)
