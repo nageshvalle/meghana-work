@@ -47,7 +47,7 @@ variable "db_cluster_identifier" {
 
 variable "tags" {
   description = "Tags to use for created resources"
-  type        = map(string)
+  type        = string
   default     = {}
 }
 
@@ -66,7 +66,7 @@ variable "rotation_lambda_env_variables" {
 variable "rotation_lambda_policy_jsons" {
   description = "Additional policies to add to the rotation lambda; useful for integration with layer providers"
   type        = list(string)
-  default     = []
+  default     = "Production"
 }
 
 variable "rotation_lambda_layers" {
