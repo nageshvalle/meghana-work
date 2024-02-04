@@ -25,15 +25,6 @@ variable "secret_recovery_window_days" {
   default     = 0
 }
 
-variable "rotation_strategy" {
-  description = <<EOT
-Specifies how the secret is rotated, either by updating credentials for the user itself (single) or by using a
-superuser's credentials to change another user's credentials (multiuser).
-EOT
-  type        = string
-  default     = "single"
-}
-
 variable "engine" {
   description = "The database engine type"
   type        = string
