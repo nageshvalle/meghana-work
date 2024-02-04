@@ -137,7 +137,6 @@ module "rotation_lambda" {
 
 locals {
   lambda_policies = flatten([
-    data.aws_iam_policy_document.superuser[*].json,
     data.aws_iam_policy_document.secret.json,
     var.rotation_lambda_policy_jsons,
   ])
