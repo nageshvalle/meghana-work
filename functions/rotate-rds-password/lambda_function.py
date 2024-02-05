@@ -8,18 +8,18 @@ import os
 import pg
 import pgdb
 
+
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
 def lambda_handler(event, context):
-  
     arn = event['SecretId']
     token = event['ClientRequestToken']
     step = event['Step']
 
     # Setup the client
-    service_client = boto3.client('secretsmanager', endpoint_url=os.environ['SECRETS_MANAGER_ENDPOINT'])
+    service_client = boto3.client('secretsmanager')
 
     # Make sure the version is staged correctly
     metadata = service_client.describe_secret(SecretId=arn)
@@ -79,31 +79,31 @@ def create_secret(service_client, arn, token):
 def set_secret(service_client, arn, token):
        try:
         previous_dict = get_secret_dict(service_client, arn, "AWSPREVIOUS")
-    except (service_client.exceptions.ResourceNotFoundException, KeyError):
+       except (service_client.exceptions.ResourceNotFoundException, KeyError):
         previous_dict = None
-    current_dict = get_secret_dict(service_client, arn, "AWSCURRENT")
-    pending_dict = get_secret_dict(service_client, arn, "AWSPENDING", token)
+       current_dict = get_secret_dict(service_client, arn, "AWSCURRENT")
+       pending_dict = get_secret_dict(service_client, arn, "AWSPENDING", token)
 
     # First try to login with the pending secret, if it succeeds, return
-    conn = get_connection(pending_dict)
-    if conn:
+       conn = get_connection(pending_dict)
+       if conn:
         conn.close()
         logger.info("setSecret: AWSPENDING secret is already set as password in PostgreSQL DB for secret arn %s." % arn)
         return
 
     # Make sure the user from current and pending match
-    if current_dict['username'] != pending_dict['username']:
+       if current_dict['username'] != pending_dict['username']:
         logger.error("setSecret: Attempting to modify user %s other than current user %s" % (pending_dict['username'], current_dict['username']))
         raise ValueError("Attempting to modify user %s other than current user %s" % (pending_dict['username'], current_dict['username']))
 
     # Make sure the host from current and pending match
-    if current_dict['host'] != pending_dict['host']:
+       if current_dict['host'] != pending_dict['host']:
         logger.error("setSecret: Attempting to modify user for host %s other than current host %s" % (pending_dict['host'], current_dict['host']))
         raise ValueError("Attempting to modify user for host %s other than current host %s" % (pending_dict['host'], current_dict['host']))
 
     # Now try the current password
-    conn = get_connection(current_dict)
-    if not conn:
+       conn = get_connection(current_dict)
+       if not conn:
         if previous_dict:
             # If both current and pending do not work, try previous
             conn = get_connection(previous_dict)
@@ -117,13 +117,13 @@ def set_secret(service_client, arn, token):
                 raise ValueError("Attempting to modify user for host %s other than current previous valid %s" % (pending_dict['host'], previous_dict['host']))
 
     # If we still don't have a connection, raise a ValueError
-    if not conn:
+       if not conn:
         logger.error("setSecret: Unable to log into database with previous, current, or pending secret of secret arn %s" % arn)
         raise ValueError("Unable to log into database with previous, current, or pending secret of secret arn %s" % arn)
 
     # Now set the password to the pending password
-    try:
-        with conn.cursor() as cur:
+       try:
+          with conn.cursor() as cur:
             # Get escaped username via quote_ident
             cur.execute("SELECT quote_ident(%s)", (pending_dict['username'],))
             escaped_username = cur.fetchone()[0]
@@ -132,7 +132,7 @@ def set_secret(service_client, arn, token):
             cur.execute(alter_role + " WITH PASSWORD %s", (pending_dict['password'],))
             conn.commit()
             logger.info("setSecret: Successfully set password for user %s in PostgreSQL DB for secret arn %s." % (pending_dict['username'], arn))
-    finally:
+       finally:
         conn.close()
 
 
